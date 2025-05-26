@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,94 +7,166 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;600&family=Marcellus+SC&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            /* Subtle texture/gradient for the page background */
-            background-color: #f3f0e9; /* A very light cream */
-            background-image: linear-gradient(45deg, rgba(212, 199, 176, 0.1) 25%, transparent 25%),
-                              linear-gradient(-45deg, rgba(212, 199, 176, 0.1) 25%, transparent 25%),
-                              linear-gradient(45deg, transparent 75%, rgba(212, 199, 176, 0.1) 75%),
-                              linear-gradient(-45deg, transparent 75%, rgba(212, 199, 176, 0.1) 75%);
-            background-size: 20px 20px;
+            /* New page background - dark, ethereal */
+            background-color: #1a1e2f; /* Deep indigo */
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(120, 110, 200, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(100, 180, 220, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 30% 80%, rgba(150, 100, 180, 0.1) 0%, transparent 40%);
+            /* This creates a subtle nebula/starry effect */
+            overflow: hidden; /* Prevent scrollbars during initial animation */
         }
         .font-lora { font-family: 'Lora', serif; }
-        .font-caveat { font-family: 'Caveat', cursive; }
+        .font-marcellus { font-family: 'Marcellus SC', serif; } /* For a touch of classic fantasy */
 
-        /* Custom scrollbar for a more themed feel (optional) */
+        /* Custom scrollbar for a more themed feel */
         .journal-content-area::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
         .journal-content-area::-webkit-scrollbar-track {
-            background: #fdfbf5; /* Lighter page color */
+            background: rgba(250, 246, 238, 0.3); /* Lighter page color, slightly transparent */
             border-radius: 10px;
         }
         .journal-content-area::-webkit-scrollbar-thumb {
-            background: #d4c7b0; /* Muted brown */
+            background: #b0a08c; /* Muted gold/brown */
             border-radius: 10px;
+            border: 2px solid rgba(250, 246, 238, 0.3); /* Creates an inset effect */
         }
         .journal-content-area::-webkit-scrollbar-thumb:hover {
-            background: #bfb29c;
+            background: #9c8c78;
         }
 
-        /* Animation classes */
+        /* Entry Content Animation */
         .entry-content {
-            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
         }
         .entry-hidden {
             opacity: 0;
-            transform: translateX(20px); /* Slight slide in from right */
-            pointer-events: none; /* Prevent interaction when hidden */
-            position: absolute; /* Take out of flow */
+            transform: translateY(25px) scale(0.97); /* Softer vertical entrance */
+            pointer-events: none;
+            position: absolute; /* Key for smooth transitions without content jumping */
+            width: calc(100% - 2*2.5rem); /* Adjust for padding in main (sm:p-10) */
         }
         .entry-visible {
             opacity: 1;
-            transform: translateX(0);
+            transform: translateY(0) scale(1);
             position: relative; /* Back in flow */
         }
 
         /* Journal opening animation */
         #journal-container {
             opacity: 0;
-            transform: scale(0.95) translateY(20px);
-            animation: openJournal 0.8s 0.2s ease-out forwards;
+            transform: scale(0.9) translateY(50px);
+            /* Animation will be triggered by JS after greeting */
         }
-
+        .journal-animate-in {
+            animation: openJournal 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s forwards; /* Added slight delay */
+        }
         @keyframes openJournal {
             to {
                 opacity: 1;
                 transform: scale(1) translateY(0);
             }
         }
+
+        /* Greeting Animation */
+        #greeting-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #1a1e2f; /* Same as body for seamlessness initially */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0; /* Starts transparent */
+            animation: fadeInGreeting 0.8s ease-out forwards, fadeOutGreeting 0.8s 2.8s ease-in forwards;
+            /* Fade in (0.8s), stay (2s), then fade out (0.8s) */
+        }
+        #greeting-text {
+            font-family: 'Marcellus SC', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem); /* Responsive font size */
+            color: #f0e6d2; /* Light cream/gold */
+            text-shadow: 0 0 8px rgba(240, 230, 210, 0.5), 0 0 15px rgba(240, 230, 210, 0.4), 0 0 25px rgba(212, 175, 55, 0.3); /* Softer gold glow */
+            opacity: 0;
+            transform: translateY(20px);
+            animation: revealText 1.5s 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
+        }
+        @keyframes fadeInGreeting {
+            to { opacity: 1; }
+        }
+        @keyframes fadeOutGreeting {
+            from { opacity: 1; }
+            to { opacity: 0; pointer-events: none; }
+        }
+        @keyframes revealText {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Subtle border effect for the journal "pages" */
+        .journal-page-effect {
+            box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.15), /* Faint gold line */
+                        0 0 25px rgba(24, 27, 42, 0.5); /* Inner shadow for depth */
+        }
+         /* Enhanced Button Styling */
+        .entry-button {
+            background-color: rgba(255, 255, 255, 0.03); /* Very subtle glassmorphism */
+            backdrop-filter: blur(8px); /* Increased blur for more pronounced effect */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: #d1c5b0; /* Default text color for buttons */
+        }
+        .entry-button:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px) scale(1.03); /* Slightly more lift */
+            color: #f0e6d2; /* Brighter text on hover */
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.12); /* Faint gold glow */
+        }
+        .entry-button.active-button { /* Style for the active button */
+            background-color: rgba(212, 175, 55, 0.15); /* Faint gold background */
+            border-color: rgba(212, 175, 55, 0.4);
+            color: #f5edd6; /* Light gold text for active */
+            transform: translateY(-1px) scale(1.01);
+            box-shadow: 0 3px 12px rgba(212, 175, 55, 0.2);
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen p-4 sm:p-6">
 
-    <div id="journal-container" class="w-full max-w-4xl bg-[#FAF6EE] shadow-2xl rounded-xl overflow-hidden flex flex-col md:flex-row h-[85vh] max-h-[700px]">
+    <div id="greeting-overlay">
+        <h1 id="greeting-text">Welcome Star!</h1>
+    </div>
+
+    <div id="journal-container" class="w-full max-w-5xl bg-[#2c2f48] rounded-xl overflow-hidden flex flex-col md:flex-row h-[85vh] max-h-[750px] journal-page-effect">
         <!-- Navigation Pane -->
-        <nav class="md:w-1/3 bg-[#EFE6D5] p-6 sm:p-8 border-b md:border-b-0 md:border-r border-[#D4C7B0] overflow-y-auto">
-            <h1 class="font-caveat text-5xl text-[#6B4F4C] mb-6 text-center md:text-left">My Journal</h1>
+        <nav class="md:w-1/3 bg-[#24273a]/60 backdrop-blur-lg p-6 sm:p-8 border-b md:border-b-0 md:border-r border-gray-600/20 overflow-y-auto rounded-l-xl">
+            <h1 class="font-marcellus text-4xl sm:text-5xl text-[#e0cda9] mb-8 text-center md:text-left tracking-wider">My Journal</h1>
             <div id="entry-buttons" class="space-y-3">
-                <!-- Buttons will be dynamically inserted here if preferred, or hardcoded -->
-                <button data-entry="entry1" class="entry-button w-full text-left p-3 rounded-lg font-semibold text-[#5A3E3B] hover:bg-[#D4C7B0] hover:text-[#4a322f] focus:outline-none focus:ring-2 focus:ring-[#A07F6D] transition-all duration-300 transform hover:scale-105 active:scale-95">
+                <button data-entry="entry1" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70">
                     From Gold to Silver
                 </button>
-                <button data-entry="entry2" class="entry-button w-full text-left p-3 rounded-lg font-semibold text-[#5A3E3B] hover:bg-[#D4C7B0] hover:text-[#4a322f] focus:outline-none focus:ring-2 focus:ring-[#A07F6D] transition-all duration-300 transform hover:scale-105 active:scale-95">
+                <button data-entry="entry2" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70">
                     Sing me a song
                 </button>
-                <button data-entry="entry3" class="entry-button w-full text-left p-3 rounded-lg font-semibold text-[#5A3E3B] hover:bg-[#D4C7B0] hover:text-[#4a322f] focus:outline-none focus:ring-2 focus:ring-[#A07F6D] transition-all duration-300 transform hover:scale-105 active:scale-95">
+                <button data-entry="entry3" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70">
                     Ocean to Shore
                 </button>
             </div>
         </nav>
 
         <!-- Content Display Area -->
-        <main class="md:w-2/3 p-6 sm:p-8 overflow-y-auto journal-content-area relative bg-[#FAF6EE]">
+        <main class="md:w-2/3 p-6 sm:p-10 overflow-y-auto journal-content-area relative bg-[#FBF8F1] rounded-r-xl">
             <!-- Entry 1: From Gold to Silver -->
             <div id="entry1" class="entry-content entry-hidden">
-                <h2 class="font-lora text-3xl font-bold text-[#4A322F] mb-6">From Gold to Silver</h2>
-                <div class="font-lora text-[#5A3E3B] text-lg leading-relaxed space-y-5">
+                <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
+                <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5">
                     <p>I don’t really know why I’m writing this tonight. Maybe because I found myself touching the necklace again, like I always do when things get too loud. Exams, games, presentations, just life in general. And every time, there it is—quiet, steady, and hers. The little star on my chest.</p>
                     <p>I bought it for us because I thought it was cute. Tarot card necklaces. Yours the Star, mine the Moon. It just felt like us instantly. You, always shining with this magnetic light that pulls me back to myself. Me, the quieter one, always orbiting your warmth. It fit. So I got them.</p>
                     <p>It was gold at first. Bright, new, kind of flashy if I’m being honest. Not really something I would've ever worn before. I’ve never been a necklace person. It always felt like too much. But this one? This one felt different. I put it on and never took it off.</p>
@@ -106,7 +177,7 @@
                     <p>I like to think that it’s been absorbing pieces of our story. The laughs, the tears, the late night talks, the quiet moments when we didn’t have to say anything at all. It’s not just worn. It’s infused.</p>
                     <p>And honestly, it comforts me more than I expected. I never thought I’d be the type to find peace in something so simple. But knowing I carry a part of you with me, right over my heart… it makes me feel whole. Like even when we’re not in the same place, I’m still connected to you. Like somehow, you’re still holding me.</p>
                     <p>So yeah… my golden necklace turned to silver.</p>
-                    <p class="italic mt-4">And I think that’s kind of beautiful.<br>
+                    <p class="italic mt-4 text-[#605250]">And I think that’s kind of beautiful.<br>
                     Because love doesn’t stay shiny and untouched.<br>
                     It softens, deepens, lives.<br>
                     And it stays close, like a star against my chest.</p>
@@ -115,8 +186,8 @@
 
             <!-- Entry 2: Sing me a song -->
             <div id="entry2" class="entry-content entry-hidden">
-                <h2 class="font-lora text-3xl font-bold text-[#4A322F] mb-6">Sing me a song</h2>
-                <div class="font-lora text-[#5A3E3B] text-lg leading-relaxed space-y-5">
+                <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Sing me a song</h2>
+                <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5">
                     <p>It’s always in the little moments when she slips into my day. Not loudly, not deliberately, but soft and quiet, like a hum that’s been living in me all along.</p>
                     <p>Today, we were working on our Rizal final project, the El Fili play. We were setting up props and running lines, everyone busy with their own thing, and I guess I wasn’t fully aware of myself. In the middle of moving around and fixing something, I caught myself singing a love song under my breath. Nothing dramatic, just a line or two that echoed in my head. I didn’t even think about it. It just came out, natural as breathing.</p>
                     <p>Then one of my classmates looked at me, smirking. He said, “In love kaayo ka, Reigh, noh?”</p>
@@ -127,15 +198,15 @@
                     <p>The truth is, love has changed the way I carry myself. It’s made a home in the corners of my day. I find her in the silence between scenes, in the waiting before rehearsals, in the slow rhythm of a brush stroke when I paint, and the warm rush of a melody. Even when my mind is on school, on scripts, on deadlines, she’s there. In the background, like a favorite song that never gets old.</p>
                     <p>I think what they don’t see is that when I sing love songs, I’m not just singing. I’m remembering. I’m reliving every look, every smile, every moment she held my gaze and made me feel like I was the only person in the world. These songs, even the random ones I hum without thinking, all lead back to her. She’s become the meaning behind every lyric, every chorus, every melody that stirs something in me.</p>
                     <p>Sometimes I think my heart sings even before my mouth does. Like it knows exactly who it's singing for.</p>
-                    <p class="italic mt-4">Maybe that’s what love does. It plants itself quietly, then grows into everything. It colors how I see the world. It sneaks into the rhythms of my day. And even in the most unexpected times, like during a school project on a novel, it reminds me that I’m not just going through the motions. I’m living with my heart wide open.</p>
-                    <p class="italic">And she’s the reason why.</p>
+                    <p class="italic mt-4 text-[#605250]">Maybe that’s what love does. It plants itself quietly, then grows into everything. It colors how I see the world. It sneaks into the rhythms of my day. And even in the most unexpected times, like during a school project on a novel, it reminds me that I’m not just going through the motions. I’m living with my heart wide open.</p>
+                    <p class="italic text-[#605250]">And she’s the reason why.</p>
                 </div>
             </div>
 
             <!-- Entry 3: Ocean to Shore (Poem) -->
             <div id="entry3" class="entry-content entry-hidden">
-                <h2 class="font-lora text-3xl font-bold text-[#4A322F] mb-6">Ocean to Shore</h2>
-                <div class="font-lora text-[#5A3E3B] text-lg leading-loose space-y-6"> <!-- leading-loose for poems -->
+                <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Ocean to Shore</h2>
+                <div class="font-lora text-[#4f4240] text-lg leading-loose space-y-6 text-center"> <!-- Centered poem -->
                     <p>You are the shore, gold-dusted, still,<br>
                     a hush where sunlight learns to spill.<br>
                     I am the sea, a restless song,<br>
@@ -149,7 +220,7 @@
                     <p>You do not move, yet pull me near,<br>
                     no anchor tied, no voice to hear.<br>
                     But oh, your silence draws me fast,<br>
-                    more constant than the winds that pass.</p>
+                    more constant than the winds that pass.</p
 
                     <p>I break and bend upon your sand,<br>
                     and still you meet me hand in hand.<br>
@@ -163,21 +234,25 @@
                 </div>
             </div>
 
-            <!-- Placeholder when no entry is selected, or for a welcome message -->
+            <!-- Placeholder when no entry is selected -->
             <div id="placeholder-content" class="entry-content entry-visible flex flex-col items-center justify-center h-full text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-[#A07F6D] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m0 0a8.485 8.485 0 0011.494 0M12 17.747a8.485 8.485 0 01-11.494 0M12 6.253a8.485 8.485 0 0111.494 0M12 6.253L4.03 3.222a8.485 8.485 0 008.94 1.528L12 6.253zM3.75 12a8.25 8.25 0 1016.5 0 8.25 8.25 0 00-16.5 0z" />
-                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m0 0a8.485 8.485 0 0011.494 0M12 17.747a8.485 8.485 0 01-11.494 0M12 6.253L4.03 3.222a8.485 8.485 0 008.94 1.528L12 6.253zM3.75 12a8.25 8.25 0 1016.5 0 8.25 8.25 0 00-16.5 0zM12 6.253V3M12 17.747V21" />
-                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253a2.25 2.25 0 01-2.242-2.123L9.75 3M12 6.253a2.25 2.25 0 002.242-2.123L14.25 3M12 17.747a2.25 2.25 0 012.242 2.123l.008.127M12 17.747a2.25 2.25 0 00-2.242 2.123l-.008.127" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-28 w-28 text-[#b0a08c] mb-6 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                    <path d="m12 13.5 2-2.5-2-2.5"></path>
+                    <path d="m12 13.5-2-2.5-2 2.5"></path>
+                    <path d="m15 9-3 6-3-6"></path>
                 </svg>
-                <h3 class="font-lora text-2xl text-[#6B4F4C] mb-2">Welcome to My Thoughts</h3>
-                <p class="text-[#77625c] text-lg">Select an entry from the side to read.</p>
-            </div>
 
+                <h3 class="font-marcellus text-3xl text-[#605250] mb-2">Unlock the Words Within</h3>
+                <p class="text-[#7a6c69] text-lg">Choose an entry to begin your journey.</p>
+            </div>
         </main>
     </div>
 
     <script>
+        const greetingOverlay = document.getElementById('greeting-overlay');
+        const journalContainer = document.getElementById('journal-container');
         const buttons = document.querySelectorAll('.entry-button');
         const contents = document.querySelectorAll('.entry-content');
         const placeholder = document.getElementById('placeholder-content');
@@ -185,45 +260,46 @@
         let activeButton = null;
 
         function showEntry(entryId) {
+            // Hide all entries first
             contents.forEach(content => {
-                if (content.id === entryId) {
-                    content.classList.remove('entry-hidden');
-                    content.classList.add('entry-visible');
-                } else {
-                    content.classList.add('entry-hidden');
-                    content.classList.remove('entry-visible');
-                }
+                content.classList.add('entry-hidden');
+                content.classList.remove('entry-visible');
             });
-             // Scroll content area to top
-            contentArea.scrollTop = 0;
+
+            // Then show the selected one
+            const selectedEntry = document.getElementById(entryId);
+            if (selectedEntry) {
+                selectedEntry.classList.remove('entry-hidden');
+                selectedEntry.classList.add('entry-visible');
+            }
+            
+            contentArea.scrollTop = 0; // Scroll to top of content area
         }
 
         buttons.forEach(button => {
             button.addEventListener('click', () => {
                 const entryId = button.dataset.entry;
                 
-                // Update active button style
                 if (activeButton) {
-                    activeButton.classList.remove('bg-[#D4C7B0]', 'text-[#4a322f]', 'scale-105');
-                    activeButton.classList.add('hover:bg-[#D4C7B0]', 'hover:text-[#4a322f]');
+                    activeButton.classList.remove('active-button');
                 }
-                button.classList.add('bg-[#D4C7B0]', 'text-[#4a322f]', 'scale-105'); // Active state style
-                button.classList.remove('hover:bg-[#D4C7B0]', 'hover:text-[#4a322f]'); // Remove hover when active
+                button.classList.add('active-button');
                 activeButton = button;
 
                 showEntry(entryId);
             });
         });
 
-        // Initially, show the placeholder and hide all specific entries.
-        // Or, to show the first entry by default:
-        // document.addEventListener('DOMContentLoaded', () => {
-        //    if (buttons.length > 0) {
-        //        buttons[0].click(); // Simulate a click on the first button
-        //    }
-        // });
-        // For now, we'll keep the placeholder visible initially.
-        // All entries start with 'entry-hidden', placeholder starts with 'entry-visible'.
+        greetingOverlay.addEventListener('animationend', (event) => {
+            if (event.animationName === 'fadeOutGreeting') {
+                greetingOverlay.style.display = 'none'; 
+                document.body.style.overflow = 'auto'; 
+                journalContainer.classList.add('journal-animate-in');
+            }
+        });
+
+        // Ensure the placeholder is correctly shown initially, and other entries hidden.
+        // This setup in the HTML (placeholder with 'entry-visible', others with 'entry-hidden') handles it.
     </script>
 
 </body>
