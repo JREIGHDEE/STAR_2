@@ -1,1 +1,230 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Digital Journal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Subtle texture/gradient for the page background */
+            background-color: #f3f0e9; /* A very light cream */
+            background-image: linear-gradient(45deg, rgba(212, 199, 176, 0.1) 25%, transparent 25%),
+                              linear-gradient(-45deg, rgba(212, 199, 176, 0.1) 25%, transparent 25%),
+                              linear-gradient(45deg, transparent 75%, rgba(212, 199, 176, 0.1) 75%),
+                              linear-gradient(-45deg, transparent 75%, rgba(212, 199, 176, 0.1) 75%);
+            background-size: 20px 20px;
+        }
+        .font-lora { font-family: 'Lora', serif; }
+        .font-caveat { font-family: 'Caveat', cursive; }
+
+        /* Custom scrollbar for a more themed feel (optional) */
+        .journal-content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        .journal-content-area::-webkit-scrollbar-track {
+            background: #fdfbf5; /* Lighter page color */
+            border-radius: 10px;
+        }
+        .journal-content-area::-webkit-scrollbar-thumb {
+            background: #d4c7b0; /* Muted brown */
+            border-radius: 10px;
+        }
+        .journal-content-area::-webkit-scrollbar-thumb:hover {
+            background: #bfb29c;
+        }
+
+        /* Animation classes */
+        .entry-content {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        .entry-hidden {
+            opacity: 0;
+            transform: translateX(20px); /* Slight slide in from right */
+            pointer-events: none; /* Prevent interaction when hidden */
+            position: absolute; /* Take out of flow */
+        }
+        .entry-visible {
+            opacity: 1;
+            transform: translateX(0);
+            position: relative; /* Back in flow */
+        }
+
+        /* Journal opening animation */
+        #journal-container {
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            animation: openJournal 0.8s 0.2s ease-out forwards;
+        }
+
+        @keyframes openJournal {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6">
+
+    <div id="journal-container" class="w-full max-w-4xl bg-[#FAF6EE] shadow-2xl rounded-xl overflow-hidden flex flex-col md:flex-row h-[85vh] max-h-[700px]">
+        <!-- Navigation Pane -->
+        <nav class="md:w-1/3 bg-[#EFE6D5] p-6 sm:p-8 border-b md:border-b-0 md:border-r border-[#D4C7B0] overflow-y-auto">
+            <h1 class="font-caveat text-5xl text-[#6B4F4C] mb-6 text-center md:text-left">My Journal</h1>
+            <div id="entry-buttons" class="space-y-3">
+                <!-- Buttons will be dynamically inserted here if preferred, or hardcoded -->
+                <button data-entry="entry1" class="entry-button w-full text-left p-3 rounded-lg font-semibold text-[#5A3E3B] hover:bg-[#D4C7B0] hover:text-[#4a322f] focus:outline-none focus:ring-2 focus:ring-[#A07F6D] transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    From Gold to Silver
+                </button>
+                <button data-entry="entry2" class="entry-button w-full text-left p-3 rounded-lg font-semibold text-[#5A3E3B] hover:bg-[#D4C7B0] hover:text-[#4a322f] focus:outline-none focus:ring-2 focus:ring-[#A07F6D] transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    Sing me a song
+                </button>
+                <button data-entry="entry3" class="entry-button w-full text-left p-3 rounded-lg font-semibold text-[#5A3E3B] hover:bg-[#D4C7B0] hover:text-[#4a322f] focus:outline-none focus:ring-2 focus:ring-[#A07F6D] transition-all duration-300 transform hover:scale-105 active:scale-95">
+                    Ocean to Shore
+                </button>
+            </div>
+        </nav>
+
+        <!-- Content Display Area -->
+        <main class="md:w-2/3 p-6 sm:p-8 overflow-y-auto journal-content-area relative bg-[#FAF6EE]">
+            <!-- Entry 1: From Gold to Silver -->
+            <div id="entry1" class="entry-content entry-hidden">
+                <h2 class="font-lora text-3xl font-bold text-[#4A322F] mb-6">From Gold to Silver</h2>
+                <div class="font-lora text-[#5A3E3B] text-lg leading-relaxed space-y-5">
+                    <p>I don’t really know why I’m writing this tonight. Maybe because I found myself touching the necklace again, like I always do when things get too loud. Exams, games, presentations, just life in general. And every time, there it is—quiet, steady, and hers. The little star on my chest.</p>
+                    <p>I bought it for us because I thought it was cute. Tarot card necklaces. Yours the Star, mine the Moon. It just felt like us instantly. You, always shining with this magnetic light that pulls me back to myself. Me, the quieter one, always orbiting your warmth. It fit. So I got them.</p>
+                    <p>It was gold at first. Bright, new, kind of flashy if I’m being honest. Not really something I would've ever worn before. I’ve never been a necklace person. It always felt like too much. But this one? This one felt different. I put it on and never took it off.</p>
+                    <p>People sometimes say, hey, cool necklace, and I just nod, like it’s nothing. But in my head, I’m thinking: it’s not just a necklace. It’s hers. It’s us.</p>
+                    <p>Now, over time, it’s faded into silver. At first, I thought I should be a little sad about that. Like it was losing something. But the more I looked at it, the more I realized… maybe it was just becoming what it was always meant to be. Silver is our favorite anyway. And silver feels softer. Realer. More lived in.</p>
+                    <p>It’s strange, something so small, but it’s been with me through everything. Through rain, shine, long nights, early mornings. Volleyball practices where I rub it between my fingers just to focus. Stressful school weeks where I catch myself gripping it like it’s a lifeline. Quiet moments when I miss you, and holding it is the next best thing to holding your hand.</p>
+                    <p>I’ve noticed the edges getting dull, the shine wearing away. And yeah, a tiny part of me gets a little sad when I notice it. But there’s also this deep, quiet happiness in knowing that it’s worn down because I chose to wear it through everything. I never took it off. Not once. Even when it would’ve been easier to leave it behind.</p>
+                    <p>I like to think that it’s been absorbing pieces of our story. The laughs, the tears, the late night talks, the quiet moments when we didn’t have to say anything at all. It’s not just worn. It’s infused.</p>
+                    <p>And honestly, it comforts me more than I expected. I never thought I’d be the type to find peace in something so simple. But knowing I carry a part of you with me, right over my heart… it makes me feel whole. Like even when we’re not in the same place, I’m still connected to you. Like somehow, you’re still holding me.</p>
+                    <p>So yeah… my golden necklace turned to silver.</p>
+                    <p class="italic mt-4">And I think that’s kind of beautiful.<br>
+                    Because love doesn’t stay shiny and untouched.<br>
+                    It softens, deepens, lives.<br>
+                    And it stays close, like a star against my chest.</p>
+                </div>
+            </div>
+
+            <!-- Entry 2: Sing me a song -->
+            <div id="entry2" class="entry-content entry-hidden">
+                <h2 class="font-lora text-3xl font-bold text-[#4A322F] mb-6">Sing me a song</h2>
+                <div class="font-lora text-[#5A3E3B] text-lg leading-relaxed space-y-5">
+                    <p>It’s always in the little moments when she slips into my day. Not loudly, not deliberately, but soft and quiet, like a hum that’s been living in me all along.</p>
+                    <p>Today, we were working on our Rizal final project, the El Fili play. We were setting up props and running lines, everyone busy with their own thing, and I guess I wasn’t fully aware of myself. In the middle of moving around and fixing something, I caught myself singing a love song under my breath. Nothing dramatic, just a line or two that echoed in my head. I didn’t even think about it. It just came out, natural as breathing.</p>
+                    <p>Then one of my classmates looked at me, smirking. He said, “In love kaayo ka, Reigh, noh?”</p>
+                    <p>And without missing a beat, I smiled and said, “Yes.” Not shy. Not trying to hide it. Just… yes. Proudly.</p>
+                    <p>And I meant it.</p>
+                    <p>I think what surprised me most wasn’t that I said it, but how natural it felt. How obvious it must look to other people. I didn’t plan to sing that song. I didn’t sit there and decide, okay, time to think about her now. It just happened. It always just happens.</p>
+                    <p>Lately, I’ve noticed I’ve been singing love songs more often. Like, way more often than I used to. While I’m washing the dishes. Doing chores. Painting alone in my room. Even while I’m doing my homework or just scrolling endlessly through social media. It’s like my mind always finds its way to a song, and my heart quietly tags her in the melody.</p>
+                    <p>The truth is, love has changed the way I carry myself. It’s made a home in the corners of my day. I find her in the silence between scenes, in the waiting before rehearsals, in the slow rhythm of a brush stroke when I paint, and the warm rush of a melody. Even when my mind is on school, on scripts, on deadlines, she’s there. In the background, like a favorite song that never gets old.</p>
+                    <p>I think what they don’t see is that when I sing love songs, I’m not just singing. I’m remembering. I’m reliving every look, every smile, every moment she held my gaze and made me feel like I was the only person in the world. These songs, even the random ones I hum without thinking, all lead back to her. She’s become the meaning behind every lyric, every chorus, every melody that stirs something in me.</p>
+                    <p>Sometimes I think my heart sings even before my mouth does. Like it knows exactly who it's singing for.</p>
+                    <p class="italic mt-4">Maybe that’s what love does. It plants itself quietly, then grows into everything. It colors how I see the world. It sneaks into the rhythms of my day. And even in the most unexpected times, like during a school project on a novel, it reminds me that I’m not just going through the motions. I’m living with my heart wide open.</p>
+                    <p class="italic">And she’s the reason why.</p>
+                </div>
+            </div>
+
+            <!-- Entry 3: Ocean to Shore (Poem) -->
+            <div id="entry3" class="entry-content entry-hidden">
+                <h2 class="font-lora text-3xl font-bold text-[#4A322F] mb-6">Ocean to Shore</h2>
+                <div class="font-lora text-[#5A3E3B] text-lg leading-loose space-y-6"> <!-- leading-loose for poems -->
+                    <p>You are the shore, gold-dusted, still,<br>
+                    a hush where sunlight learns to spill.<br>
+                    I am the sea, a restless song,<br>
+                    adrift in longing all along.</p>
+
+                    <p>I rise with moons, I fall with flame,<br>
+                    I carry stars that speak your name.<br>
+                    And though I crash or slip through blue,<br>
+                    each wave I am returns to you.</p>
+
+                    <p>You do not move, yet pull me near,<br>
+                    no anchor tied, no voice to hear.<br>
+                    But oh, your silence draws me fast,<br>
+                    more constant than the winds that pass.</p>
+
+                    <p>I break and bend upon your sand,<br>
+                    and still you meet me hand in hand.<br>
+                    You ask for nothing, yet I pour<br>
+                    my every tide upon your shore.</p>
+
+                    <p>And when I scatter, far from view,<br>
+                    some part of me runs back to you.<br>
+                    For oceans ache to be made whole,<br>
+                    and you—the hush that holds my soul.</p>
+                </div>
+            </div>
+
+            <!-- Placeholder when no entry is selected, or for a welcome message -->
+            <div id="placeholder-content" class="entry-content entry-visible flex flex-col items-center justify-center h-full text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-[#A07F6D] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m0 0a8.485 8.485 0 0011.494 0M12 17.747a8.485 8.485 0 01-11.494 0M12 6.253a8.485 8.485 0 0111.494 0M12 6.253L4.03 3.222a8.485 8.485 0 008.94 1.528L12 6.253zM3.75 12a8.25 8.25 0 1016.5 0 8.25 8.25 0 00-16.5 0z" />
+                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v11.494m0 0a8.485 8.485 0 0011.494 0M12 17.747a8.485 8.485 0 01-11.494 0M12 6.253L4.03 3.222a8.485 8.485 0 008.94 1.528L12 6.253zM3.75 12a8.25 8.25 0 1016.5 0 8.25 8.25 0 00-16.5 0zM12 6.253V3M12 17.747V21" />
+                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253a2.25 2.25 0 01-2.242-2.123L9.75 3M12 6.253a2.25 2.25 0 002.242-2.123L14.25 3M12 17.747a2.25 2.25 0 012.242 2.123l.008.127M12 17.747a2.25 2.25 0 00-2.242 2.123l-.008.127" />
+                </svg>
+                <h3 class="font-lora text-2xl text-[#6B4F4C] mb-2">Welcome to My Thoughts</h3>
+                <p class="text-[#77625c] text-lg">Select an entry from the side to read.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const buttons = document.querySelectorAll('.entry-button');
+        const contents = document.querySelectorAll('.entry-content');
+        const placeholder = document.getElementById('placeholder-content');
+        const contentArea = document.querySelector('.journal-content-area');
+        let activeButton = null;
+
+        function showEntry(entryId) {
+            contents.forEach(content => {
+                if (content.id === entryId) {
+                    content.classList.remove('entry-hidden');
+                    content.classList.add('entry-visible');
+                } else {
+                    content.classList.add('entry-hidden');
+                    content.classList.remove('entry-visible');
+                }
+            });
+             // Scroll content area to top
+            contentArea.scrollTop = 0;
+        }
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const entryId = button.dataset.entry;
+                
+                // Update active button style
+                if (activeButton) {
+                    activeButton.classList.remove('bg-[#D4C7B0]', 'text-[#4a322f]', 'scale-105');
+                    activeButton.classList.add('hover:bg-[#D4C7B0]', 'hover:text-[#4a322f]');
+                }
+                button.classList.add('bg-[#D4C7B0]', 'text-[#4a322f]', 'scale-105'); // Active state style
+                button.classList.remove('hover:bg-[#D4C7B0]', 'hover:text-[#4a322f]'); // Remove hover when active
+                activeButton = button;
+
+                showEntry(entryId);
+            });
+        });
+
+        // Initially, show the placeholder and hide all specific entries.
+        // Or, to show the first entry by default:
+        // document.addEventListener('DOMContentLoaded', () => {
+        //    if (buttons.length > 0) {
+        //        buttons[0].click(); // Simulate a click on the first button
+        //    }
+        // });
+        // For now, we'll keep the placeholder visible initially.
+        // All entries start with 'entry-hidden', placeholder starts with 'entry-visible'.
+    </script>
+
+</body>
+</html>
