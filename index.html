@@ -9,14 +9,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@300;400;600&family=Marcellus+SC&display=swap" rel="stylesheet">
     <style>
+        html {
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+        }
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #1a1e2f; 
+            background-color: #1a1e2f;
             background-image:
                 radial-gradient(circle at 10% 20%, rgba(120, 110, 200, 0.2) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(100, 180, 220, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 30% 80%, rgba(150, 100, 180, 0.1) 0%, transparent 40%);
-            overflow-x: hidden; /* Prevent horizontal scroll from off-canvas elements */
+            overflow-x: hidden; /* Crucial: Prevent horizontal scroll from off-canvas elements */
         }
         .font-lora { font-family: 'Lora', serif; }
         .font-marcellus { font-family: 'Marcellus SC', serif; }
@@ -31,7 +34,7 @@
         }
         .entry-hidden {
             opacity: 0;
-            transform: translateY(25px) scale(0.97); 
+            transform: translateY(25px) scale(0.97);
             pointer-events: none;
             position: absolute;
             /* Width will be set by JS */
@@ -39,13 +42,12 @@
         .entry-visible {
             opacity: 1;
             transform: translateY(0) scale(1);
-            position: relative; 
+            position: relative;
         }
 
         #journal-container {
             opacity: 0;
             transform: scale(0.9) translateY(50px);
-            /* This is the main centered "book" */
         }
         .journal-animate-in {
             animation: openJournal 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s forwards;
@@ -56,14 +58,15 @@
 
         #greeting-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #1a1e2f; 
+            background-color: #1a1e2f;
             display: flex; align-items: center; justify-content: center;
-            z-index: 100; opacity: 0;
+            z-index: 1000; /* Highest z-index */
+            opacity: 0;
             animation: fadeInGreeting 0.8s ease-out forwards, fadeOutGreeting 0.8s 2.8s ease-in forwards;
         }
         #greeting-text {
-            font-family: 'Marcellus SC', serif; font-size: clamp(2.5rem, 6vw, 4rem); 
-            color: #f0e6d2; 
+            font-family: 'Marcellus SC', serif; font-size: clamp(2.5rem, 6vw, 4rem);
+            color: #f0e6d2;
             text-shadow: 0 0 8px rgba(240, 230, 210, 0.5), 0 0 15px rgba(240, 230, 210, 0.4), 0 0 25px rgba(212, 175, 55, 0.3);
             opacity: 0; transform: translateY(20px);
             animation: revealText 1.5s 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -73,79 +76,93 @@
         @keyframes revealText { to { opacity: 1; transform: translateY(0); } }
 
         .journal-page-effect {
-            box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.15), 0 0 25px rgba(24, 27, 42, 0.5); 
+            box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.15), 0 0 25px rgba(24, 27, 42, 0.5);
         }
         .entry-button {
-            background-color: rgba(255, 255, 255, 0.03); 
-            backdrop-filter: blur(8px); 
+            background-color: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            color: #d1c5b0; 
+            color: #d1c5b0;
+            touch-action: manipulation; /* Improve touch responsiveness */
         }
         .entry-button:hover {
             background-color: rgba(255, 255, 255, 0.08);
             border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px) scale(1.03); 
-            color: #f0e6d2; 
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.12); 
+            transform: translateY(-3px) scale(1.03);
+            color: #f0e6d2;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.12);
         }
-        .entry-button.active-button { 
-            background-color: rgba(212, 175, 55, 0.15); 
+        .entry-button.active-button {
+            background-color: rgba(212, 175, 55, 0.15);
             border-color: rgba(212, 175, 55, 0.4);
-            color: #f5edd6; 
+            color: #f5edd6;
             transform: translateY(-1px) scale(1.01);
             box-shadow: 0 3px 12px rgba(212, 175, 55, 0.2);
         }
         .highlight { font-weight: 500; color: #b98c56; }
 
-        /* Mobile Menu Styles */
-        #journal-nav.mobile-menu-open {
-            transform: translateX(0);
-        }
+        /* Styles for body when mobile menu is open */
         .body-no-scroll {
             overflow: hidden;
         }
+
+        /* Mobile Menu Overlay */
+        #menu-overlay.menu-overlay-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Journal Navigation: Mobile Off-Canvas and Desktop Sidebar */
+        #journal-nav.nav-open { /* Class toggled by JS for mobile */
+            transform: translateX(0);
+        }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4 sm:p-6 overflow-x-hidden">
+<body class="flex items-center justify-center min-h-screen p-0 sm:p-6 overflow-x-hidden">
 
     <div id="greeting-overlay">
         <h1 id="greeting-text">Welcome Star!</h1>
     </div>
 
-    <!-- Menu Toggle Button (Visible on Mobile Only) -->
-    <button id="menu-toggle-button" aria-label="Open menu"
-            class="md:hidden fixed top-5 left-5 z-[60] p-2.5 bg-[#3a3e5c]/70 backdrop-blur-md rounded-lg text-[#e0cda9] shadow-lg">
+    <!-- Menu Toggle Button (Visible on Mobile Only, higher z-index) -->
+    <button id="menu-toggle-button" aria-label="Open menu" aria-expanded="false"
+            class="md:hidden fixed top-4 left-4 z-[550] p-2.5 bg-[#3a3e5c]/80 backdrop-blur-md rounded-lg text-[#e0cda9] shadow-lg">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
     </button>
 
-    <!-- Overlay for mobile menu -->
-    <div id="menu-overlay" class="md:hidden fixed inset-0 bg-black/60 z-[45] hidden transition-opacity duration-300 opacity-0"></div>
+    <!-- Overlay for mobile menu (higher z-index than nav, lower than toggle button if toggle is outside) -->
+    <div id="menu-overlay"
+         class="md:hidden fixed inset-0 bg-black/60 z-[500] opacity-0 pointer-events-none transition-opacity duration-300">
+    </div>
 
+    <!-- Main Journal Structure -->
+    <div id="journal-container"
+         class="w-full h-screen md:h-[85vh] md:max-h-[750px] md:max-w-5xl
+                bg-[#2c2f48] md:rounded-xl md:overflow-hidden
+                flex flex-col md:flex-row journal-page-effect">
 
-    <div id="journal-container" class="w-full max-w-5xl bg-[#2c2f48] rounded-xl overflow-hidden flex flex-col md:flex-row h-[85vh] max-h-[750px] journal-page-effect">
-        
-        <!-- Navigation Pane (Off-canvas on mobile, sidebar on desktop) -->
-        <nav id="journal-nav" 
-             class="fixed inset-y-0 left-0 z-50 w-4/5 max-w-[280px] 
+        <!-- Navigation Pane -->
+        <nav id="journal-nav"
+             class="fixed inset-y-0 left-0 z-[520] w-4/5 max-w-[280px]
                     transform -translate-x-full transition-transform duration-300 ease-in-out
-                    md:relative md:translate-x-0 md:w-1/3 md:max-w-none
-                    bg-[#202234] md:bg-[#24273a]/60 md:backdrop-blur-lg p-6 sm:p-8
-                    border-r border-gray-600/0 md:border-gray-600/20 overflow-y-auto
-                    shadow-2xl md:shadow-none md:rounded-l-xl">
-            
+                    bg-[#202234] shadow-2xl p-6 pt-16 sm:p-8 sm:pt-16 overflow-y-auto /* pt-16 to clear hamburger */
+                    md:relative md:translate-x-0 md:w-1/3 md:max-w-none md:pt-8
+                    md:bg-[#24273a]/60 md:backdrop-blur-lg md:shadow-none md:border-r md:border-gray-600/20 md:rounded-l-xl">
+
             <!-- Close button for mobile off-canvas -->
             <button id="close-menu-button" aria-label="Close menu"
-                    class="md:hidden absolute top-5 right-5 p-1 text-gray-400 hover:text-white">
+                    class="md:hidden absolute top-4 right-4 p-1 text-gray-400 hover:text-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
 
-            <h1 class="font-marcellus text-4xl text-[#e0cda9] mb-8 mt-8 md:mt-0 text-center md:text-left tracking-wider">My Journal</h1>
+            <h1 class="font-marcellus text-4xl text-[#e0cda9] mb-8 text-center md:text-left tracking-wider">My Journal</h1>
             <div id="entry-buttons" class="space-y-3">
+                <!-- Buttons -->
                 <button data-entry="entry1" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                     From Gold to Silver
@@ -162,11 +179,9 @@
         </nav>
 
         <!-- Content Display Area -->
-        <main class="w-full h-full overflow-y-auto journal-content-area relative bg-[#FBF8F1] 
-                     md:rounded-r-xl p-6 pt-8 sm:p-10 sm:pt-10"> 
-                     <!-- Adjusted padding for consistent spacing, pt-8 on mobile for a bit more top space below status bar area -->
-            <!-- Entries will be here -->
-            <!-- Entry 1: From Gold to Silver -->
+        <main class="journal-content-area w-full h-full overflow-y-auto relative bg-[#FBF8F1]
+                     p-6 pt-8 md:p-10 md:pt-10 md:rounded-r-xl">
+            <!-- Entries -->
             <div id="entry1" class="entry-content entry-hidden">
                 <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
                 <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
@@ -186,8 +201,6 @@
                     And it stays close, like a star against my chest.</span></p>
                 </div>
             </div>
-
-            <!-- Entry 2: Sing me a song -->
             <div id="entry2" class="entry-content entry-hidden">
                 <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Sing me a song</h2>
                 <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
@@ -205,8 +218,6 @@
                     <p class="italic text-[#605250]"><span class="highlight">And she’s the reason why.</span></p>
                 </div>
             </div>
-
-            <!-- Entry 3: Ocean to Shore (Poem) -->
             <div id="entry3" class="entry-content entry-hidden">
                 <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Ocean to Shore</h2>
                 <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG9jZWFuJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1000&q=80" 
@@ -239,7 +250,6 @@
                     and you—the hush that holds my soul.</span></p>
                 </div>
             </div>
-            <!-- Placeholder -->
             <div id="placeholder-content" class="entry-content entry-visible flex flex-col items-center justify-center h-full text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-28 w-28 text-[#b0a08c] mb-6 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
@@ -253,7 +263,7 @@
     </div>
 
     <script>
-        const body = document.body;
+        const docElement = document.documentElement;
         const greetingOverlay = document.getElementById('greeting-overlay');
         const journalContainer = document.getElementById('journal-container');
         
@@ -262,9 +272,8 @@
         const journalNav = document.getElementById('journal-nav');
         const menuOverlay = document.getElementById('menu-overlay');
 
-        const entryButtons = document.querySelectorAll('#entry-buttons .entry-button'); // More specific selector
+        const entryButtons = document.querySelectorAll('#entry-buttons .entry-button');
         const contents = document.querySelectorAll('.entry-content');
-        const placeholder = document.getElementById('placeholder-content');
         const contentArea = document.querySelector('.journal-content-area');
         let activeButton = null;
 
@@ -273,24 +282,27 @@
         }
 
         function openMobileMenu() {
-            if (!isMobileView()) return;
-            journalNav.classList.add('mobile-menu-open');
-            menuOverlay.classList.remove('hidden');
-            setTimeout(() => menuOverlay.classList.add('opacity-100'), 10); // For transition
-            body.classList.add('body-no-scroll');
+            journalNav.classList.add('nav-open');
+            menuOverlay.classList.add('menu-overlay-active');
+            docElement.classList.add('body-no-scroll');
             menuToggleButton.setAttribute('aria-expanded', 'true');
         }
 
         function closeMobileMenu() {
-            if (!isMobileView()) return;
-            journalNav.classList.remove('mobile-menu-open');
-            menuOverlay.classList.remove('opacity-100');
-            setTimeout(() => menuOverlay.classList.add('hidden'), 300); // Match transition duration
-            body.classList.remove('body-no-scroll');
+            journalNav.classList.remove('nav-open');
+            menuOverlay.classList.remove('menu-overlay-active');
+            docElement.classList.remove('body-no-scroll');
             menuToggleButton.setAttribute('aria-expanded', 'false');
         }
 
-        menuToggleButton.addEventListener('click', openMobileMenu);
+        menuToggleButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent event bubbling
+            if (journalNav.classList.contains('nav-open')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
         closeMenuButton.addEventListener('click', closeMobileMenu);
         menuOverlay.addEventListener('click', closeMobileMenu);
 
@@ -302,8 +314,8 @@
             const paddingLeft = computedStyle.paddingLeft;
             const paddingRight = computedStyle.paddingRight;
         
-            document.querySelectorAll('.entry-hidden').forEach(el => {
-                el.style.width = `calc(100% - ${paddingLeft} - ${paddingRight})`;
+            document.querySelectorAll('.entry-content.entry-hidden').forEach(el => {
+                el.style.width = `calc(100% - (${paddingLeft} + ${paddingRight}))`;
             });
         }
 
@@ -315,7 +327,7 @@
 
             const selectedEntry = document.getElementById(entryId);
             if (selectedEntry) {
-                updateEntryHiddenWidth();
+                updateEntryHiddenWidth(); // Call before making visible
                 selectedEntry.classList.remove('entry-hidden');
                 selectedEntry.classList.add('entry-visible');
             }
@@ -333,7 +345,7 @@
                 activeButton = button;
 
                 showEntry(entryId);
-                if (isMobileView()) {
+                if (isMobileView() && journalNav.classList.contains('nav-open')) {
                     closeMobileMenu();
                 }
             });
@@ -342,7 +354,7 @@
         greetingOverlay.addEventListener('animationend', (event) => {
             if (event.animationName === 'fadeOutGreeting') {
                 greetingOverlay.style.display = 'none'; 
-                body.style.overflowY = 'auto'; // Enable Y scroll after greeting, X remains hidden
+                docElement.style.overflowY = 'auto'; 
                 journalContainer.classList.add('journal-animate-in');
                 updateEntryHiddenWidth(); 
             }
@@ -350,17 +362,17 @@
         
         window.addEventListener('DOMContentLoaded', () => {
             updateEntryHiddenWidth();
-            // Set initial aria-expanded state for menu toggle
             menuToggleButton.setAttribute('aria-expanded', 'false');
+            // Initially, only placeholder is visible.
+            // If you want first entry active by default:
+            // if (entryButtons.length > 0) { entryButtons[0].click(); }
         });
+
         window.addEventListener('resize', () => {
             updateEntryHiddenWidth();
-            // If resizing from mobile to desktop with menu open, ensure it's properly reset
-            if (!isMobileView() && journalNav.classList.contains('mobile-menu-open')) {
-                journalNav.classList.remove('mobile-menu-open'); // Remove transform
-                menuOverlay.classList.add('hidden');
-                menuOverlay.classList.remove('opacity-100');
-                body.classList.remove('body-no-scroll');
+            if (!isMobileView() && journalNav.classList.contains('nav-open')) {
+                // If resizing to desktop while mobile menu is open, close it cleanly
+                closeMobileMenu(); 
             }
         });
     </script>
