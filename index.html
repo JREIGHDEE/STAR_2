@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Poppins:wght@300;400;600&family=Marcellus+SC&display=swap" rel="stylesheet">
     <style>
         html {
-            -webkit-tap-highlight-color: transparent; /* Remove tap highlight on iOS */
+            -webkit-tap-highlight-color: transparent; /* Remove tap highlight */
         }
         body {
             font-family: 'Poppins', sans-serif;
@@ -19,14 +19,14 @@
                 radial-gradient(circle at 10% 20%, rgba(120, 110, 200, 0.2) 0%, transparent 50%),
                 radial-gradient(circle at 80% 70%, rgba(100, 180, 220, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 30% 80%, rgba(150, 100, 180, 0.1) 0%, transparent 40%);
-            overflow-x: hidden; /* Crucial: Prevent horizontal scroll from off-canvas elements */
+            overflow-x: hidden;
         }
         .font-lora { font-family: 'Lora', serif; }
         .font-marcellus { font-family: 'Marcellus SC', serif; }
 
         .journal-content-area::-webkit-scrollbar { width: 10px; }
-        .journal-content-area::-webkit-scrollbar-track { background: rgba(250, 246, 238, 0.3); border-radius: 10px; }
-        .journal-content-area::-webkit-scrollbar-thumb { background: #b0a08c; border-radius: 10px; border: 2px solid rgba(250, 246, 238, 0.3); }
+        .journal-content-area::-webkit-scrollbar-track { background: rgba(250, 246, 238, 0.1); border-radius: 10px; }
+        .journal-content-area::-webkit-scrollbar-thumb { background: #b0a08c; border-radius: 10px; border: 2px solid rgba(250, 246, 238, 0.1); }
         .journal-content-area::-webkit-scrollbar-thumb:hover { background: #9c8c78; }
 
         .entry-content {
@@ -45,9 +45,24 @@
             position: relative;
         }
 
+        #journal-container-wrapper { /* New wrapper for centering */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem; /* Basic padding for small screens */
+        }
+        @media (min-width: 640px) { /* sm */
+             #journal-container-wrapper {
+                padding: 1.5rem;
+             }
+        }
+
+
         #journal-container {
             opacity: 0;
             transform: scale(0.9) translateY(50px);
+            /* Removed h-screen, max-h, max-w. This will be on the wrapper or set directly */
         }
         .journal-animate-in {
             animation: openJournal 1s cubic-bezier(0.165, 0.84, 0.44, 1) 0.2s forwards;
@@ -60,8 +75,7 @@
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: #1a1e2f;
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000; /* Highest z-index */
-            opacity: 0;
+            z-index: 1000; opacity: 0;
             animation: fadeInGreeting 0.8s ease-out forwards, fadeOutGreeting 0.8s 2.8s ease-in forwards;
         }
         #greeting-text {
@@ -78,188 +92,176 @@
         .journal-page-effect {
             box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.15), 0 0 25px rgba(24, 27, 42, 0.5);
         }
-        .entry-button {
-            background-color: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+        /* Entry Button Styling (Universal) */
+        .nav-entry-button {
+            background-color: transparent; /* Header buttons are often just text-like */
+            padding: 0.5rem 0.75rem; /* Adjust padding as needed */
+            border-radius: 0.375rem; /* rounded-md */
+            font-weight: 600; /* semibold */
             color: #d1c5b0;
-            touch-action: manipulation; /* Improve touch responsiveness */
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            text-align: left;
+            width: 100%; /* For mobile dropdown */
+            touch-action: manipulation;
         }
-        .entry-button:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            transform: translateY(-3px) scale(1.03);
-            color: #f0e6d2;
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.12);
-        }
-        .entry-button.active-button {
+        .nav-entry-button:hover, .nav-entry-button.active-button {
             background-color: rgba(212, 175, 55, 0.15);
-            border-color: rgba(212, 175, 55, 0.4);
             color: #f5edd6;
-            transform: translateY(-1px) scale(1.01);
-            box-shadow: 0 3px 12px rgba(212, 175, 55, 0.2);
         }
+        .nav-entry-button.active-button {
+             box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+        /* Desktop specific adjustments for horizontal layout */
+        @media (min-width: 768px) { /* md */
+            .nav-entry-button {
+                width: auto; /* Reset width for desktop inline display */
+                padding: 0.5rem 1rem;
+            }
+        }
+
+
         .highlight { font-weight: 500; color: #b98c56; }
 
-        /* Styles for body when mobile menu is open */
-        .body-no-scroll {
+        /* Mobile Menu Dropdown Panel */
+        #mobile-menu-panel {
+            max-height: 0;
             overflow: hidden;
+            transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+            opacity: 0;
+            background-color: #202234; /* Slightly different from header for depth */
+            border-bottom-left-radius: 0.75rem; /* rounded-xl */
+            border-bottom-right-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2), 0 4px 6px -2px rgba(0,0,0,0.1);
         }
-
-        /* Mobile Menu Overlay */
-        #menu-overlay.menu-overlay-active {
+        #mobile-menu-panel.menu-open {
+            max-height: 500px; /* Large enough to fit items */
             opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* Journal Navigation: Mobile Off-Canvas and Desktop Sidebar */
-        #journal-nav.nav-open { /* Class toggled by JS for mobile */
-            transform: translateX(0);
         }
     </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-0 sm:p-6 overflow-x-hidden">
+<body class="overflow-x-hidden">
 
     <div id="greeting-overlay">
         <h1 id="greeting-text">Welcome Star!</h1>
     </div>
 
-    <!-- Menu Toggle Button (Visible on Mobile Only, higher z-index) -->
-    <button id="menu-toggle-button" aria-label="Open menu" aria-expanded="false"
-            class="md:hidden fixed top-4 left-4 z-[550] p-2.5 bg-[#3a3e5c]/80 backdrop-blur-md rounded-lg text-[#e0cda9] shadow-lg">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-    </button>
+    <!-- Wrapper for centering and managing size of journal container -->
+    <div id="journal-container-wrapper">
+        <!-- Main Journal Structure -->
+        <div id="journal-container"
+             class="w-full h-full max-w-5xl bg-[#2c2f48] rounded-xl
+                    flex flex-col journal-page-effect
+                    md:h-[85vh] md:max-h-[750px]"> {/* Set specific height for desktop */}
 
-    <!-- Overlay for mobile menu (higher z-index than nav, lower than toggle button if toggle is outside) -->
-    <div id="menu-overlay"
-         class="md:hidden fixed inset-0 bg-black/60 z-[500] opacity-0 pointer-events-none transition-opacity duration-300">
-    </div>
+            <!-- Header Navigation -->
+            <header class="relative z-30 bg-[#24273a]/80 backdrop-blur-md p-4 sm:p-5 border-b border-gray-600/20 rounded-t-xl flex items-center justify-between">
+                <h1 class="font-marcellus text-2xl sm:text-3xl text-[#e0cda9] tracking-wider">My Journal</h1>
 
-    <!-- Main Journal Structure -->
-    <div id="journal-container"
-         class="w-full h-screen md:h-[85vh] md:max-h-[750px] md:max-w-5xl
-                bg-[#2c2f48] md:rounded-xl md:overflow-hidden
-                flex flex-col md:flex-row journal-page-effect">
-
-        <!-- Navigation Pane -->
-        <nav id="journal-nav"
-             class="fixed inset-y-0 left-0 z-[520] w-4/5 max-w-[280px]
-                    transform -translate-x-full transition-transform duration-300 ease-in-out
-                    bg-[#202234] shadow-2xl p-6 pt-16 sm:p-8 sm:pt-16 overflow-y-auto /* pt-16 to clear hamburger */
-                    md:relative md:translate-x-0 md:w-1/3 md:max-w-none md:pt-8
-                    md:bg-[#24273a]/60 md:backdrop-blur-lg md:shadow-none md:border-r md:border-gray-600/20 md:rounded-l-xl">
-
-            <!-- Close button for mobile off-canvas -->
-            <button id="close-menu-button" aria-label="Close menu"
-                    class="md:hidden absolute top-4 right-4 p-1 text-gray-400 hover:text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-
-            <h1 class="font-marcellus text-4xl text-[#e0cda9] mb-8 text-center md:text-left tracking-wider">My Journal</h1>
-            <div id="entry-buttons" class="space-y-3">
-                <!-- Buttons -->
-                <button data-entry="entry1" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
-                    From Gold to Silver
+                <!-- Hamburger Menu Button (Mobile) -->
+                <button id="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false"
+                        class="md:hidden p-2 text-[#e0cda9] rounded hover:bg-white/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m4-6h16" />
+                    </svg>
                 </button>
-                <button data-entry="entry2" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3V3z" /></svg>
-                    Sing me a song
-                </button>
-                <button data-entry="entry3" class="entry-button w-full text-left p-3.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-[#d4af37]/70 flex items-center">
-                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                    Ocean to Shore
-                </button>
-            </div>
-        </nav>
 
-        <!-- Content Display Area -->
-        <main class="journal-content-area w-full h-full overflow-y-auto relative bg-[#FBF8F1]
-                     p-6 pt-8 md:p-10 md:pt-10 md:rounded-r-xl">
-            <!-- Entries -->
-            <div id="entry1" class="entry-content entry-hidden">
-                <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
-                <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
-                    <p>I don’t really know why I’m writing this tonight. Maybe because I found myself touching the necklace again, like I always do when things get too loud. Exams, games, presentations, just life in general. And every time, there it is—<span class="highlight">quiet, steady, and hers. The little star on my chest.</span></p>
-                    <p>I bought it for us because I thought it was cute. Tarot card necklaces. Yours the Star, mine the Moon. It just felt like us instantly. You, always shining with this magnetic light that pulls me back to myself. Me, the quieter one, always orbiting your warmth. It fit. So I got them.</p>
-                    <p>It was gold at first. Bright, new, kind of flashy if I’m being honest. Not really something I would've ever worn before. I’ve never been a necklace person. It always felt like too much. But this one? This one felt different. I put it on and never took it off.</p>
-                    <p>People sometimes say, hey, cool necklace, and I just nod, like it’s nothing. But in my head, I’m thinking: <span class="highlight">it’s not just a necklace. It’s hers. It’s us.</span></p>
-                    <p>Now, over time, it’s faded into silver. At first, I thought I should be a little sad about that. Like it was losing something. But the more I looked at it, the more I realized… maybe it was just becoming what it was always meant to be. <span class="highlight">Silver is our favorite anyway. And silver feels softer. Realer. More lived in.</span></p>
-                    <p>It’s strange, something so small, but it’s been with me through everything. Through rain, shine, long nights, early mornings. Volleyball practices where I rub it between my fingers just to focus. Stressful school weeks where I catch myself gripping it like it’s a lifeline. Quiet moments when I miss you, and holding it is the next best thing to holding your hand.</p>
-                    <p>I’ve noticed the edges getting dull, the shine wearing away. And yeah, a tiny part of me gets a little sad when I notice it. But there’s also this deep, quiet happiness in knowing that <span class="highlight">it’s worn down because I chose to wear it through everything. I never took it off. Not once.</span> Even when it would’ve been easier to leave it behind.</p>
-                    <p>I like to think that it’s been absorbing pieces of our story. The laughs, the tears, the late night talks, the quiet moments when we didn’t have to say anything at all. It’s not just worn. It’s infused.</p>
-                    <p>And honestly, it comforts me more than I expected. I never thought I’d be the type to find peace in something so simple. But knowing I carry a part of you with me, right over my heart… it makes me feel whole. Like even when we’re not in the same place, I’m still connected to you. Like somehow, you’re still holding me.</p>
-                    <p>So yeah… my golden necklace turned to silver.</p>
-                    <p class="italic mt-4 text-[#605250]"><span class="highlight">And I think that’s kind of beautiful.<br>
-                    Because love doesn’t stay shiny and untouched.<br>
-                    It softens, deepens, lives.<br>
-                    And it stays close, like a star against my chest.</span></p>
+                <!-- Desktop Navigation Links -->
+                <nav id="desktop-nav-links" class="hidden md:flex items-center space-x-2">
+                    <!-- Buttons will be populated here by JS or hardcoded -->
+                </nav>
+            </header>
+
+            <!-- Mobile Menu Dropdown Panel (Absolutely positioned relative to header or journal-container) -->
+            <div id="mobile-menu-panel" class="md:hidden w-full absolute top-full left-0 right-0 p-3 space-y-1">
+                 {/* Buttons will be populated here by JS or hardcoded for mobile */}
+            </div>
+
+
+            <!-- Content Display Area -->
+            <main class="journal-content-area flex-grow w-full overflow-y-auto relative bg-[#FBF8F1]
+                         p-6 sm:p-10 md:rounded-b-xl">
+                {/* Entries */}
+                <div id="entry1" class="entry-content entry-hidden">
+                    <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
+                    <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
+                        <p>I don’t really know why I’m writing this tonight. Maybe because I found myself touching the necklace again, like I always do when things get too loud. Exams, games, presentations, just life in general. And every time, there it is—<span class="highlight">quiet, steady, and hers. The little star on my chest.</span></p>
+                        <p>I bought it for us because I thought it was cute. Tarot card necklaces. Yours the Star, mine the Moon. It just felt like us instantly. You, always shining with this magnetic light that pulls me back to myself. Me, the quieter one, always orbiting your warmth. It fit. So I got them.</p>
+                        <p>It was gold at first. Bright, new, kind of flashy if I’m being honest. Not really something I would've ever worn before. I’ve never been a necklace person. It always felt like too much. But this one? This one felt different. I put it on and never took it off.</p>
+                        <p>People sometimes say, hey, cool necklace, and I just nod, like it’s nothing. But in my head, I’m thinking: <span class="highlight">it’s not just a necklace. It’s hers. It’s us.</span></p>
+                        <p>Now, over time, it’s faded into silver. At first, I thought I should be a little sad about that. Like it was losing something. But the more I looked at it, the more I realized… maybe it was just becoming what it was always meant to be. <span class="highlight">Silver is our favorite anyway. And silver feels softer. Realer. More lived in.</span></p>
+                        <p>I’ve noticed the edges getting dull, the shine wearing away. And yeah, a tiny part of me gets a little sad when I notice it. But there’s also this deep, quiet happiness in knowing that <span class="highlight">it’s worn down because I chose to wear it through everything. I never took it off. Not once.</span> Even when it would’ve been easier to leave it behind.</p>
+                        <p>I like to think that it’s been absorbing pieces of our story. The laughs, the tears, the late night talks, the quiet moments when we didn’t have to say anything at all. It’s not just worn. It’s infused.</p>
+                        <p>And honestly, it comforts me more than I expected. I never thought I’d be the type to find peace in something so simple. But knowing I carry a part of you with me, right over my heart… it makes me feel whole. Like even when we’re not in the same place, I’m still connected to you. Like somehow, you’re still holding me.</p>
+                        <p>So yeah… my golden necklace turned to silver.</p>
+                        <p class="italic mt-4 text-[#605250]"><span class="highlight">And I think that’s kind of beautiful.<br>
+                        Because love doesn’t stay shiny and untouched.<br>
+                        It softens, deepens, lives.<br>
+                        And it stays close, like a star against my chest.</span></p>
+                    </div>
                 </div>
-            </div>
-            <div id="entry2" class="entry-content entry-hidden">
-                <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Sing me a song</h2>
-                <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
-                    <p>It’s always in the little moments when she slips into my day. Not loudly, not deliberately, but soft and quiet, like a hum that’s been living in me all along.</p>
-                    <p>Today, we were working on our Rizal final project, the El Fili play. We were setting up props and running lines, everyone busy with their own thing, and I guess I wasn’t fully aware of myself. In the middle of moving around and fixing something, I caught myself singing a love song under my breath. Nothing dramatic, just a line or two that echoed in my head. I didn’t even think about it. It just came out, natural as breathing.</p>
-                    <p>Then one of my classmates looked at me, smirking. He said, “In love kaayo ka, Reigh, noh?”</p>
-                    <p><span class="highlight">And without missing a beat, I smiled and said, “Yes.” Not shy. Not trying to hide it. Just… yes. Proudly.</span></p>
-                    <p>And I meant it.</p>
-                    <p>I think what surprised me most wasn’t that I said it, but how natural it felt. How obvious it must look to other people. I didn’t plan to sing that song. I didn’t sit there and decide, okay, time to think about her now. It just happened. It always just happens.</p>
-                    <p>Lately, I’ve noticed I’ve been singing love songs more often. Like, way more often than I used to. While I’m washing the dishes. Doing chores. Painting alone in my room. Even while I’m doing my homework or just scrolling endlessly through social media. <span class="highlight">It’s like my mind always finds its way to a song, and my heart quietly tags her in the melody.</span></p>
-                    <p>The truth is, love has changed the way I carry myself. It’s made a home in the corners of my day. I find her in the silence between scenes, in the waiting before rehearsals, in the slow rhythm of a brush stroke when I paint, and the warm rush of a melody. Even when my mind is on school, on scripts, on deadlines, she’s there. In the background, like a favorite song that never gets old.</p>
-                    <p>I think what they don’t see is that when I sing love songs, I’m not just singing. I’m remembering. I’m reliving every look, every smile, every moment she held my gaze and made me feel like I was the only person in the world. These songs, even the random ones I hum without thinking, all lead back to her. <span class="highlight">She’s become the meaning behind every lyric, every chorus, every melody that stirs something in me.</span></p>
-                    <p>Sometimes I think my heart sings even before my mouth does. Like it knows exactly who it's singing for.</p>
-                    <p class="italic mt-4 text-[#605250]"><span class="highlight">Maybe that’s what love does. It plants itself quietly, then grows into everything.</span> It colors how I see the world. It sneaks into the rhythms of my day. And even in the most unexpected times, like during a school project on a novel, it reminds me that I’m not just going through the motions. I’m living with my heart wide open.</p>
-                    <p class="italic text-[#605250]"><span class="highlight">And she’s the reason why.</span></p>
+                <div id="entry2" class="entry-content entry-hidden">
+                    <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Sing me a song</h2>
+                    <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
+                        <p>It’s always in the little moments when she slips into my day. Not loudly, not deliberately, but soft and quiet, like a hum that’s been living in me all along.</p>
+                        <p>Today, we were working on our Rizal final project, the El Fili play. We were setting up props and running lines, everyone busy with their own thing, and I guess I wasn’t fully aware of myself. In the middle of moving around and fixing something, I caught myself singing a love song under my breath. Nothing dramatic, just a line or two that echoed in my head. I didn’t even think about it. It just came out, natural as breathing.</p>
+                        <p>Then one of my classmates looked at me, smirking. He said, “In love kaayo ka, Reigh, noh?”</p>
+                        <p><span class="highlight">And without missing a beat, I smiled and said, “Yes.” Not shy. Not trying to hide it. Just… yes. Proudly.</span></p>
+                        <p>And I meant it.</p>
+                        <p>I think what surprised me most wasn’t that I said it, but how natural it felt. How obvious it must look to other people. I didn’t plan to sing that song. I didn’t sit there and decide, okay, time to think about her now. It just happened. It always just happens.</p>
+                        <p>Lately, I’ve noticed I’ve been singing love songs more often. Like, way more often than I used to. While I’m washing the dishes. Doing chores. Painting alone in my room. Even while I’m doing my homework or just scrolling endlessly through social media. <span class="highlight">It’s like my mind always finds its way to a song, and my heart quietly tags her in the melody.</span></p>
+                        <p>The truth is, love has changed the way I carry myself. It’s made a home in the corners of my day. I find her in the silence between scenes, in the waiting before rehearsals, in the slow rhythm of a brush stroke when I paint, and the warm rush of a melody. Even when my mind is on school, on scripts, on deadlines, she’s there. In the background, like a favorite song that never gets old.</p>
+                        <p>I think what they don’t see is that when I sing love songs, I’m not just singing. I’m remembering. I’m reliving every look, every smile, every moment she held my gaze and made me feel like I was the only person in the world. These songs, even the random ones I hum without thinking, all lead back to her. <span class="highlight">She’s become the meaning behind every lyric, every chorus, every melody that stirs something in me.</span></p>
+                        <p>Sometimes I think my heart sings even before my mouth does. Like it knows exactly who it's singing for.</p>
+                        <p class="italic mt-4 text-[#605250]"><span class="highlight">Maybe that’s what love does. It plants itself quietly, then grows into everything.</span> It colors how I see the world. It sneaks into the rhythms of my day. And even in the most unexpected times, like during a school project on a novel, it reminds me that I’m not just going through the motions. I’m living with my heart wide open.</p>
+                        <p class="italic text-[#605250]"><span class="highlight">And she’s the reason why.</span></p>
+                    </div>
                 </div>
-            </div>
-            <div id="entry3" class="entry-content entry-hidden">
-                <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Ocean to Shore</h2>
-                <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG9jZWFuJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1000&q=80" 
-                     alt="Artistic depiction of an ocean meeting the shore" 
-                     class="rounded-lg shadow-lg mb-8 w-full h-60 sm:h-72 object-cover object-center">
-                <div class="font-lora text-[#4f4240] text-lg leading-loose space-y-6 text-center"> 
-                    <p>You are the shore, gold-dusted, still,<br>
-                    a hush where sunlight learns to spill.<br>
-                    I am the sea, a restless song,<br>
-                    adrift in longing all along.</p>
-
-                    <p>I rise with moons, I fall with flame,<br>
-                    I carry stars that speak your name.<br>
-                    And though I crash or slip through blue,<br>
-                    <span class="highlight">each wave I am returns to you.</span></p>
-
-                    <p>You do not move, yet pull me near,<br>
-                    no anchor tied, no voice to hear.<br>
-                    But oh, <span class="highlight">your silence draws me fast,</span><br>
-                    more constant than the winds that pass.</p>
-
-                    <p>I break and bend upon your sand,<br>
-                    and still you meet me hand in hand.<br>
-                    You ask for nothing, yet I pour<br>
-                    my every tide upon your shore.</p>
-
-                    <p><span class="highlight">And when I scatter, far from view,<br>
-                    some part of me runs back to you.<br>
-                    For oceans ache to be made whole,<br>
-                    and you—the hush that holds my soul.</span></p>
+                <div id="entry3" class="entry-content entry-hidden">
+                    <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">Ocean to Shore</h2>
+                    <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG9jZWFuJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1000&q=80" 
+                         alt="Artistic depiction of an ocean meeting the shore" 
+                         class="rounded-lg shadow-lg mb-8 w-full h-60 sm:h-72 object-cover object-center">
+                    <div class="font-lora text-[#4f4240] text-lg leading-loose space-y-6 text-center"> 
+                        <p>You are the shore, gold-dusted, still,<br>
+                        a hush where sunlight learns to spill.<br>
+                        I am the sea, a restless song,<br>
+                        adrift in longing all along.</p>
+    
+                        <p>I rise with moons, I fall with flame,<br>
+                        I carry stars that speak your name.<br>
+                        And though I crash or slip through blue,<br>
+                        <span class="highlight">each wave I am returns to you.</span></p>
+    
+                        <p>You do not move, yet pull me near,<br>
+                        no anchor tied, no voice to hear.<br>
+                        But oh, <span class="highlight">your silence draws me fast,</span><br>
+                        more constant than the winds that pass.</p>
+    
+                        <p>I break and bend upon your sand,<br>
+                        and still you meet me hand in hand.<br>
+                        You ask for nothing, yet I pour<br>
+                        my every tide upon your shore.</p>
+    
+                        <p><span class="highlight">And when I scatter, far from view,<br>
+                        some part of me runs back to you.<br>
+                        For oceans ache to be made whole,<br>
+                        and you—the hush that holds my soul.</span></p>
+                    </div>
                 </div>
-            </div>
-            <div id="placeholder-content" class="entry-content entry-visible flex flex-col items-center justify-center h-full text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-28 w-28 text-[#b0a08c] mb-6 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-                     <path d="M10.5 7.5l1.5 3-1.5 3"></path> <path d="M13.5 7.5l-1.5 3 1.5 3"></path>
-                </svg>
-                <h3 class="font-marcellus text-3xl text-[#605250] mb-2">Unlock the Words Within</h3>
-                <p class="text-[#7a6c69] text-lg">Choose an entry to begin your journey.</p>
-            </div>
-        </main>
+                <div id="placeholder-content" class="entry-content entry-visible flex flex-col items-center justify-center h-full text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-28 w-28 text-[#b0a08c] mb-6 opacity-80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                         <path d="M10.5 7.5l1.5 3-1.5 3"></path> <path d="M13.5 7.5l-1.5 3 1.5 3"></path>
+                    </svg>
+                    <h3 class="font-marcellus text-3xl text-[#605250] mb-2">Unlock the Words Within</h3>
+                    <p class="text-[#7a6c69] text-lg">Choose an entry to begin your journey.</p>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script>
@@ -267,44 +269,75 @@
         const greetingOverlay = document.getElementById('greeting-overlay');
         const journalContainer = document.getElementById('journal-container');
         
-        const menuToggleButton = document.getElementById('menu-toggle-button');
-        const closeMenuButton = document.getElementById('close-menu-button');
-        const journalNav = document.getElementById('journal-nav');
-        const menuOverlay = document.getElementById('menu-overlay');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mobileMenuPanel = document.getElementById('mobile-menu-panel');
+        const desktopNavLinksContainer = document.getElementById('desktop-nav-links');
 
-        const entryButtons = document.querySelectorAll('#entry-buttons .entry-button');
         const contents = document.querySelectorAll('.entry-content');
         const contentArea = document.querySelector('.journal-content-area');
-        let activeButton = null;
+        let activeButton = null; // Will track the currently active button (could be mobile or desktop)
+        let allNavButtons = []; // To store references to all created nav buttons
 
-        function isMobileView() {
-            return window.innerWidth < 768; // Tailwind's 'md' breakpoint
+        const entriesData = [
+            { id: 'entry1', title: 'From Gold to Silver', iconSVG: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>' },
+            { id: 'entry2', title: 'Sing me a song', iconSVG: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor"><path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 1.343-3 3s1.343 3 3 3 3-1.343 3-3V3z" /></svg>' },
+            { id: 'entry3', title: 'Ocean to Shore', iconSVG: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>' }
+        ];
+
+        function createNavButton(entry) {
+            const button = document.createElement('button');
+            button.className = 'nav-entry-button'; // Universal class for styling
+            button.dataset.entry = entry.id;
+            button.innerHTML = `${entry.iconSVG}<span>${entry.title}</span>`;
+            
+            button.addEventListener('click', () => {
+                showEntry(entry.id);
+                setActiveButton(button);
+
+                if (mobileMenuPanel.classList.contains('menu-open')) {
+                    closeMobileMenu();
+                }
+            });
+            return button;
         }
 
-        function openMobileMenu() {
-            journalNav.classList.add('nav-open');
-            menuOverlay.classList.add('menu-overlay-active');
-            docElement.classList.add('body-no-scroll');
-            menuToggleButton.setAttribute('aria-expanded', 'true');
+        function populateNavigations() {
+            entriesData.forEach(entry => {
+                const desktopButton = createNavButton(entry);
+                desktopNavLinksContainer.appendChild(desktopButton);
+                allNavButtons.push(desktopButton);
+
+                const mobileButton = createNavButton(entry);
+                mobileMenuPanel.appendChild(mobileButton);
+                allNavButtons.push(mobileButton);
+            });
+        }
+        
+        function setActiveButton(clickedButton) {
+            allNavButtons.forEach(btn => {
+                btn.classList.remove('active-button');
+                // Sync active state based on data-entry, not direct instance
+                if (btn.dataset.entry === clickedButton.dataset.entry) {
+                    btn.classList.add('active-button');
+                }
+            });
         }
 
-        function closeMobileMenu() {
-            journalNav.classList.remove('nav-open');
-            menuOverlay.classList.remove('menu-overlay-active');
-            docElement.classList.remove('body-no-scroll');
-            menuToggleButton.setAttribute('aria-expanded', 'false');
-        }
 
-        menuToggleButton.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent event bubbling
-            if (journalNav.classList.contains('nav-open')) {
-                closeMobileMenu();
-            } else {
-                openMobileMenu();
+        mobileMenuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isMenuOpen = mobileMenuPanel.classList.toggle('menu-open');
+            mobileMenuToggle.setAttribute('aria-expanded', isMenuOpen.toString());
+            if (isMenuOpen) {
+                // Optional: Add listener to close if clicked outside, for now just toggle
             }
         });
-        closeMenuButton.addEventListener('click', closeMobileMenu);
-        menuOverlay.addEventListener('click', closeMobileMenu);
+        
+        function closeMobileMenu() {
+             mobileMenuPanel.classList.remove('menu-open');
+             mobileMenuToggle.setAttribute('aria-expanded', 'false');
+        }
+
 
         function updateEntryHiddenWidth() {
             const mainElement = document.querySelector('main.journal-content-area');
@@ -327,29 +360,13 @@
 
             const selectedEntry = document.getElementById(entryId);
             if (selectedEntry) {
-                updateEntryHiddenWidth(); // Call before making visible
+                updateEntryHiddenWidth();
                 selectedEntry.classList.remove('entry-hidden');
                 selectedEntry.classList.add('entry-visible');
             }
             contentArea.scrollTop = 0; 
         }
 
-        entryButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const entryId = button.dataset.entry;
-                
-                if (activeButton) {
-                    activeButton.classList.remove('active-button');
-                }
-                button.classList.add('active-button');
-                activeButton = button;
-
-                showEntry(entryId);
-                if (isMobileView() && journalNav.classList.contains('nav-open')) {
-                    closeMobileMenu();
-                }
-            });
-        });
 
         greetingOverlay.addEventListener('animationend', (event) => {
             if (event.animationName === 'fadeOutGreeting') {
@@ -361,18 +378,24 @@
         });
         
         window.addEventListener('DOMContentLoaded', () => {
+            populateNavigations(); // Create and add nav buttons
             updateEntryHiddenWidth();
-            menuToggleButton.setAttribute('aria-expanded', 'false');
-            // Initially, only placeholder is visible.
-            // If you want first entry active by default:
-            // if (entryButtons.length > 0) { entryButtons[0].click(); }
+            mobileMenuToggle.setAttribute('aria-expanded', 'false');
+            // To make the first entry active by default:
+            // if (allNavButtons.length > 0) {
+            //    const firstEntryId = entriesData[0].id;
+            //    showEntry(firstEntryId);
+            //    // Find the first button (either mobile or desktop could be used as reference)
+            //    const firstButtonReference = allNavButtons.find(btn => btn.dataset.entry === firstEntryId);
+            //    if (firstButtonReference) setActiveButton(firstButtonReference);
+            // }
         });
 
         window.addEventListener('resize', () => {
             updateEntryHiddenWidth();
-            if (!isMobileView() && journalNav.classList.contains('nav-open')) {
-                // If resizing to desktop while mobile menu is open, close it cleanly
-                closeMobileMenu(); 
+            if (window.innerWidth >= 768 && mobileMenuPanel.classList.contains('menu-open')) {
+                // If resizing to desktop while mobile menu is open, close it
+                closeMobileMenu();
             }
         });
     </script>
