@@ -149,13 +149,12 @@
     <div id="journal-container-wrapper">
         <div id="journal-container"
              class="relative bg-[#2c2f48] rounded-xl flex flex-col journal-page-effect
-                    md:h-[85vh] md:max-h-[750px]"> {/* `relative` is important here */}
+                    md:h-[85vh] md:max-h-[750px]">
 
             <header id="journal-header" class="relative z-40 bg-[#24273a]/80 backdrop-blur-md p-4 sm:p-5 border-b border-gray-600/20 rounded-t-xl flex items-center justify-between">
                 <h1 class="font-marcellus text-2xl sm:text-3xl text-[#e0cda9] tracking-wider">My Journal</h1>
                 <button id="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false"
                         class="md:hidden p-2 text-[#e0cda9] rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#d4af37]/70">
-                    {/* Hamburger icon changes based on state */}
                     <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
                     </svg>
@@ -164,18 +163,13 @@
                     </svg>
                 </button>
                 <nav id="desktop-nav-links" class="hidden md:flex items-center space-x-1 lg:space-x-2">
-                    {/* Desktop buttons */}
                 </nav>
             </header>
-
-            {/* Mobile Menu Panel: Positioned absolutely within journal-container, below the header */}
             <div id="mobile-menu-panel" class="md:hidden absolute w-full left-0 p-3 space-y-1 z-30">
-                 {/* Mobile buttons */}
             </div>
 
             <main class="journal-content-area flex-grow w-full overflow-y-auto relative bg-[#FBF8F1]
                          p-6 sm:p-10 md:rounded-b-xl">
-                {/* Entries */}
                 <div id="entry1" class="entry-content entry-hidden">
                     <h2 class="font-lora text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
                     <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
