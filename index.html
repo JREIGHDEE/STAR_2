@@ -151,8 +151,8 @@
             background: #000;
             border-radius: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-top: 1.5rem; /* Add margin if it comes after poem */
-            margin-bottom: 1rem; /* Consistent bottom margin */
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
         }
         .video-container iframe {
             position: absolute;
@@ -162,15 +162,26 @@
             height: 100%;
             border: 0;
         }
-        .poem-text-container { /* Wrapper for poem text styling */
-            font-size: 1rem; /* Default base size for poem text, slightly smaller than main text */
-            line-height: 1.7; /* Good line height for readability */
-            color: #4f4240; /* Consistent with other Lora text */
+        .poem-text-container {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #4f4240;
         }
         @media (min-width: 640px) { /* sm and up */
             .poem-text-container {
-                 font-size: 1.125rem; /* text-lg on larger screens */
+                 font-size: 1.125rem;
             }
+        }
+        .entry-image { /* Class for images within entries */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+            margin-bottom: 2rem; /* mb-8 */
+            width: 100%;
+            max-width: 28rem; /* max-w-md, can be adjusted */
+            margin-left: auto;
+            margin-right: auto;
+            height: auto; /* Maintain aspect ratio */
+            object-fit: contain; /* Ensure whole image is visible, may leave letterbox/pillarbox */
         }
     </style>
 </head>
@@ -197,14 +208,17 @@
                     </svg>
                 </button>
                 <nav id="desktop-nav-links" class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    {/* Desktop buttons */}
                 </nav>
             </header>
 
             <div id="mobile-menu-panel" class="md:hidden absolute w-full left-0 p-3 space-y-1 z-30">
+                 {/* Mobile buttons */}
             </div>
 
             <main class="journal-content-area flex-grow w-full overflow-y-auto relative bg-[#FBF8F1]
                          p-4 sm:p-6 md:p-8 lg:p-10 md:rounded-b-xl">
+                {/* Entries */}
                 <div id="entry1" class="entry-content entry-hidden">
                     <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
                     <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
@@ -242,9 +256,9 @@
                 </div>
                 <div id="entry3" class="entry-content entry-hidden">
                     <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6 text-center">Ocean to Shore</h2>
-                    <img src="https://www.sellingantiques.co.uk/photosnew/dealer_mansionhouse/dealer_mansionhouse_highres_1546607024219-1588490744.jpg" 
+                    <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG9jZWFuJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1000&q=80" 
                          alt="Artistic depiction of an ocean meeting the shore" 
-                         class="rounded-lg shadow-lg mb-8 w-full max-w-md mx-auto h-auto object-contain">
+                         class="entry-image">
                     <div class="font-lora poem-text-container space-y-6 text-center"> 
                         <p>You are the shore, gold-dusted, still,<br>
                         a hush where sunlight learns to spill.<br>
@@ -274,7 +288,10 @@
                 </div>
                 <div id="entry4" class="entry-content entry-hidden">
                     <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6 text-center">Just You</h2>
-                    <div class="font-lora poem-text-container space-y-6 text-center mb-8">
+                    <img src="https://i.ibb.co/mV7gtxMd/20250408-003939.jpg" 
+                         alt="A personal, meaningful image" 
+                         class="entry-image">
+                    <div class="font-lora poem-text-container space-y-6 text-center">
                         <p>"In every glance, I find my peace,<br>
                         A quiet joy that doesn’t cease.<br>
                         No need for stars to light my skies,<br>
@@ -312,7 +329,6 @@
     </div>
 
     <script>
-        // JavaScript remains the same as the previous version, no changes needed here for these specific requests.
         const docElement = document.documentElement;
         const greetingOverlay = document.getElementById('greeting-overlay');
         const journalContainer = document.getElementById('journal-container');
