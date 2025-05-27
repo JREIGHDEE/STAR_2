@@ -52,7 +52,7 @@
             justify-content: center;
             min-height: 100vh;
             width: 100%;
-            padding: 0.75rem; /* Slightly reduced for more space on small mobile */
+            padding: 0.75rem;
         }
         @media (min-width: 640px) { /* sm */
              #journal-container-wrapper {
@@ -60,12 +60,11 @@
              }
         }
 
-
         #journal-container {
             opacity: 0;
             transform: scale(0.9) translateY(50px);
             width: 100%;
-            max-width: 1100px; /* Max width for PC view */
+            max-width: 1100px;
             height: 100%;
         }
         .journal-animate-in {
@@ -80,13 +79,13 @@
             background-color: #1a1e2f;
             display: flex; align-items: center; justify-content: center;
             z-index: 1000; opacity: 0;
-            animation: fadeInGreeting 0.8s ease-out forwards, fadeOutGreeting 0.8s 3.3s ease-in forwards; /* Increased hold time for longer greeting */
+            animation: fadeInGreeting 0.8s ease-out forwards, fadeOutGreeting 0.8s 3.3s ease-in forwards;
         }
         #greeting-text {
-            font-family: 'Marcellus SC', serif; font-size: clamp(2rem, 5vw, 3.5rem); /* Slightly smaller for longer text */
+            font-family: 'Marcellus SC', serif; font-size: clamp(2rem, 5vw, 3.5rem);
             color: #f0e6d2;
-            text-align: center; /* Center align greeting text */
-            padding: 0 1rem; /* Add padding for long text on small screens */
+            text-align: center;
+            padding: 0 1rem;
             text-shadow: 0 0 8px rgba(240, 230, 210, 0.5), 0 0 15px rgba(240, 230, 210, 0.4), 0 0 25px rgba(212, 175, 55, 0.3);
             opacity: 0; transform: translateY(20px);
             animation: revealText 1.5s 0.5s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
@@ -143,17 +142,17 @@
             transform: translateY(0);
         }
 
-        /* Responsive Video Embed */
         .video-container {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%; /* 16:9 */
             height: 0;
             overflow: hidden;
             max-width: 100%;
-            background: #000; /* Optional: background color while loading */
-            border-radius: 0.5rem; /* rounded-lg */
+            background: #000;
+            border-radius: 0.5rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            margin-bottom: 1.5rem; /* mb-6 */
+            margin-top: 1.5rem; /* Add margin if it comes after poem */
+            margin-bottom: 1rem; /* Consistent bottom margin */
         }
         .video-container iframe {
             position: absolute;
@@ -163,9 +162,15 @@
             height: 100%;
             border: 0;
         }
-        /* Poem specific styling */
-        .poem-text {
-            line-height: 1.8; /* Increased line height for poems */
+        .poem-text-container { /* Wrapper for poem text styling */
+            font-size: 1rem; /* Default base size for poem text, slightly smaller than main text */
+            line-height: 1.7; /* Good line height for readability */
+            color: #4f4240; /* Consistent with other Lora text */
+        }
+        @media (min-width: 640px) { /* sm and up */
+            .poem-text-container {
+                 font-size: 1.125rem; /* text-lg on larger screens */
+            }
         }
     </style>
 </head>
@@ -192,17 +197,21 @@
                     </svg>
                 </button>
                 <nav id="desktop-nav-links" class="hidden md:flex items-center space-x-1 lg:space-x-2">
+                    {/* Desktop buttons */}
                 </nav>
             </header>
 
             <div id="mobile-menu-panel" class="md:hidden absolute w-full left-0 p-3 space-y-1 z-30">
+                 {/* Mobile buttons */}
             </div>
 
             <main class="journal-content-area flex-grow w-full overflow-y-auto relative bg-[#FBF8F1]
-                         p-4 sm:p-6 md:p-8 lg:p-10 md:rounded-b-xl"> 
+                         p-4 sm:p-6 md:p-8 lg:p-10 md:rounded-b-xl">
+                {/* Entries */}
                 <div id="entry1" class="entry-content entry-hidden">
                     <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6">From Gold to Silver</h2>
                     <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
+                        {/* ... content ... */}
                         <p>I don’t really know why I’m writing this tonight. Maybe because I found myself touching the necklace again, like I always do when things get too loud. Exams, games, presentations, just life in general. And every time, there it is—<span class="highlight">quiet, steady, and hers. The little star on my chest.</span></p>
                         <p>I bought it for us because I thought it was cute. Tarot card necklaces. Yours the Star, mine the Moon. It just felt like us instantly. You, always shining with this magnetic light that pulls me back to myself. Me, the quieter one, always orbiting your warmth. It fit. So I got them.</p>
                         <p>It was gold at first. Bright, new, kind of flashy if I’m being honest. Not really something I would've ever worn before. I’ve never been a necklace person. It always felt like too much. But this one? This one felt different. I put it on and never took it off.</p>
@@ -221,6 +230,7 @@
                 <div id="entry2" class="entry-content entry-hidden">
                     <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6">Sing me a song</h2>
                     <div class="font-lora text-[#4f4240] text-lg leading-relaxed space-y-5 text-justify">
+                        {/* ... content ... */}
                         <p>It’s always in the little moments when she slips into my day. Not loudly, not deliberately, but soft and quiet, like a hum that’s been living in me all along.</p>
                         <p>Today, we were working on our Rizal final project, the El Fili play. We were setting up props and running lines, everyone busy with their own thing, and I guess I wasn’t fully aware of myself. In the middle of moving around and fixing something, I caught myself singing a love song under my breath. Nothing dramatic, just a line or two that echoed in my head. I didn’t even think about it. It just came out, natural as breathing.</p>
                         <p>Then one of my classmates looked at me, smirking. He said, “In love kaayo ka, Reigh, noh?”</p>
@@ -236,11 +246,11 @@
                     </div>
                 </div>
                 <div id="entry3" class="entry-content entry-hidden">
-                    <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6">Ocean to Shore</h2>
+                    <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6 text-center">Ocean to Shore</h2>
                     <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fG9jZWFuJTIwcGFpbnRpbmd8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1000&q=80" 
                          alt="Artistic depiction of an ocean meeting the shore" 
                          class="rounded-lg shadow-lg mb-8 w-full max-w-md mx-auto h-auto object-contain">
-                    <div class="font-lora text-[#4f4240] text-lg poem-text space-y-6 text-center"> 
+                    <div class="font-lora poem-text-container space-y-6 text-center"> 
                         <p>You are the shore, gold-dusted, still,<br>
                         a hush where sunlight learns to spill.<br>
                         I am the sea, a restless song,<br>
@@ -268,17 +278,8 @@
                     </div>
                 </div>
                 <div id="entry4" class="entry-content entry-hidden">
-                    <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6">Just You</h2>
-                    <div class="video-container">
-                        <iframe src="https://www.youtube.com/embed/EM2iBD2XJ8E?si=ooPUuRERPdZvWQ8r" 
-                                title="YouTube video player" 
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                                referrerpolicy="strict-origin-when-cross-origin" 
-                                allowfullscreen>
-                        </iframe>
-                    </div>
-                    <div class="font-lora text-[#4f4240] text-lg poem-text space-y-6 text-center">
+                    <h2 class="font-lora text-2xl sm:text-3xl font-bold text-[#3b2d2c] mb-6 text-center">Just You</h2>
+                    <div class="font-lora poem-text-container space-y-6 text-center mb-8"> {/* Added mb-8 to space poem from video */}
                         <p>"In every glance, I find my peace,<br>
                         A quiet joy that doesn’t cease.<br>
                         No need for stars to light my skies,<br>
@@ -291,6 +292,15 @@
                         
                         <p>And in this world, I always knew,<br>
                         I'd never find a love like you."</p>
+                    </div>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/EM2iBD2XJ8E?si=ooPUuRERPdZvWQ8r" 
+                                title="YouTube video player" 
+                                frameborder="0" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                                referrerpolicy="strict-origin-when-cross-origin" 
+                                allowfullscreen>
+                        </iframe>
                     </div>
                 </div>
                 <div id="placeholder-content" class="entry-content entry-visible flex flex-col items-center justify-center h-full text-center">
@@ -307,6 +317,7 @@
     </div>
 
     <script>
+        // JavaScript remains the same as the previous version, no changes needed here for these specific requests.
         const docElement = document.documentElement;
         const greetingOverlay = document.getElementById('greeting-overlay');
         const journalContainer = document.getElementById('journal-container');
@@ -435,11 +446,6 @@
             updateEntryHiddenWidth();
             setMobileMenuPanelTop();
             mobileMenuToggle.setAttribute('aria-expanded', 'false');
-            // Optional: Make first entry active
-            // if (entriesData.length > 0) {
-            //     const firstEntryButton = allNavButtons.find(btn => btn.dataset.entry === entriesData[0].id);
-            //     if (firstEntryButton) firstEntryButton.click();
-            // }
         });
 
         window.addEventListener('resize', () => {
